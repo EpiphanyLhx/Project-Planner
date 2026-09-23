@@ -19,6 +19,7 @@ struct DashboardView: View {
     let onEditGroup: (TaskGroup) -> Void
     let onAddSubtask: (TaskGroup) -> Void
     let onEditTask: (StudyTask) -> Void
+    let onPostpone: (StudyTask) -> Void
     let onDelete: (StudyTask) -> Void
 
     private var groups: [TaskGroup] {
@@ -81,6 +82,7 @@ struct DashboardView: View {
                         onEditGroup: { onEditGroup(group) },
                         onAddSubtask: { onAddSubtask(group) },
                         onEditTask: onEditTask,
+                        onPostpone: onPostpone,
                         onDelete: onDelete
                     )
                 }

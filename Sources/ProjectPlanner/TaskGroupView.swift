@@ -7,6 +7,7 @@ struct TaskGroupView: View {
     let onEditGroup: () -> Void
     let onAddSubtask: () -> Void
     let onEditTask: (StudyTask) -> Void
+    let onPostpone: (StudyTask) -> Void
     let onDelete: (StudyTask) -> Void
 
     private var isComplete: Bool {
@@ -76,6 +77,7 @@ struct TaskGroupView: View {
                         task: task,
                         onToggle: { onToggleTask(task) },
                         onEdit: { onEditTask(task) },
+                        onPostpone: { onPostpone(task) },
                         onDelete: { onDelete(task) }
                     )
                     if task.id != group.tasks.last?.id {
@@ -97,6 +99,7 @@ private struct TaskRow: View {
     let task: StudyTask
     let onToggle: () -> Void
     let onEdit: () -> Void
+    let onPostpone: () -> Void
     let onDelete: () -> Void
 
     var body: some View {
@@ -139,6 +142,16 @@ private struct TaskRow: View {
                     .foregroundStyle(.tertiary)
             }
 
+            if !task.isCompleted {
+                Button(action: onPostpone) {
+                    Image(systemName: "arrow.right.circle")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .help("后推一天")
+                .accessibilityLabel("后推一天")
+            }
+
             Button(action: onEdit) {
                 Image(systemName: "pencil")
             }
@@ -160,6 +173,10 @@ private struct TaskRow: View {
         .contentShape(Rectangle())
         .contextMenu {
             Button("编辑小任务", systemImage: "pencil", action: onEdit)
+
+            if !task.isCompleted {
+                Button("后推一天", systemImage: "arrow.right.circle", action: onPostpone)
+            }
 
             Divider()
 

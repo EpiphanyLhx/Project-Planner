@@ -335,6 +335,39 @@ final class StudyStore: ObservableObject {
         save()
     }
 
+    /// 将未完成任务后推一天；若后续日期存在相同标题的未完成任务，则链式一并后推。
+    func postponeTask(_ task: StudyTask) {
+        guard !task.isCompleted else { return }
+        let taskTitle = task.title
+        let calendar = Calendar.current
+
+        // 从任务当天起，收集连续日期中所有相同标题的未完成任务。
+        var tasksToPostpone: [StudyTask] = []
+        var cursor = task.date
+        while true {
+            let dayKey = StudyDay.key(for: cursor)
+            let dayTasks = tasks.filter {
+                StudyDay.key(for: $0.date) == dayKey &&
+                $0.title == taskTitle &&
+                !$0.isCompleted
+            }
+            guard !dayTasks.isEmpty else { break }
+            tasksToPostpone.append(contentsOf: dayTasks)
+            guard let next = calendar.date(byAdding: .day, value: 1, to: cursor) else { break }
+            cursor = next
+        }
+
+        // 从最远日期开始依次后移，避免同一天内重复移动。
+        for item in tasksToPostpone.reversed() {
+            guard let index = tasks.firstIndex(where: { $0.id == item.id }),
+                  let target = calendar.date(byAdding: .day, value: 1, to: tasks[index].date) else { continue }
+            tasks[index].date = StudyDay.start(for: target)
+            tasks[index].studyDay = StudyDay.key(for: target)
+            tasks[index].isCompleted = false
+        }
+        save()
+    }
+
     func deleteAllTasksForSelectedDay() {
         let selectedStudyDay = studyDay
 

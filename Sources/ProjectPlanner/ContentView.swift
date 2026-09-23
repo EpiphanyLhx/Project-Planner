@@ -34,6 +34,7 @@ struct ContentView: View {
                 onEditTask: { task in
                     store.editorContext = TaskEditorContext(editing: task)
                 },
+                onPostpone: postponeTask,
                 onDelete: store.deleteTask
             )
             .toolbar {
@@ -202,6 +203,12 @@ struct ContentView: View {
             : .snappy(duration: 0.28)
         withAnimation(animation) {
             store.toggleGroup(group)
+        }
+    }
+
+    private func postponeTask(_ task: StudyTask) {
+        withAnimation(.easeInOut(duration: 0.35)) {
+            store.postponeTask(task)
         }
     }
 }
