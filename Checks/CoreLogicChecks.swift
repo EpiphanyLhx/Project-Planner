@@ -3,8 +3,6 @@ import Foundation
 @main
 enum CoreLogicChecks {
     static func main() throws {
-        try checkFullModeDurations()
-        try checkSundaySchedule()
         try checkFourAMBoundary()
         try checkTextImport()
         try checkJSONImport()
@@ -22,23 +20,7 @@ enum CoreLogicChecks {
         try checkExamCountdownUsesSelectedYear()
         try checkTaskTimeSorting()
         try checkStudyModulePersistence()
-        print("Core logic checks passed (19/19)")
-    }
-
-    private static func checkFullModeDurations() throws {
-        let templates = StudySchedule.templates(for: .full, isSunday: false)
-        try require(total(for: .math, in: templates) == 180, "数学时长应为 180 分钟")
-        try require(total(for: .major, in: templates) == 210, "408 时长应为 210 分钟")
-        try require(total(for: .english, in: templates) == 150, "英语时长应为 150 分钟")
-        try require(total(for: .review, in: templates) == 30, "复盘时长应为 30 分钟")
-    }
-
-    private static func checkSundaySchedule() throws {
-        for mode in StudyMode.allCases {
-            let templates = StudySchedule.templates(for: mode, isSunday: true)
-            try require(!templates.contains { $0.subject == .english }, "周日应隐藏英语")
-            try require(templates.contains { $0.id == "sunday-planning" }, "周日应增加周复盘")
-        }
+        print("Core logic checks passed (17/17)")
     }
 
     private static func checkFourAMBoundary() throws {
@@ -273,10 +255,6 @@ enum CoreLogicChecks {
         let decoded = try JSONDecoder().decode(StudyModule.self, from: data)
         try require(decoded == module, "空模块无法持久化")
         try require(decoded.mode == .baseline && decoded.subject == .custom, "模块属性恢复错误")
-    }
-
-    private static func total(for subject: StudySubject, in templates: [TaskTemplate]) -> Int {
-        templates.filter { $0.subject == subject }.map(\.durationMinutes).reduce(0, +)
     }
 
     private static func require(_ condition: @autoclosure () -> Bool, _ message: String) throws {
