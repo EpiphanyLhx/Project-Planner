@@ -1,0 +1,18 @@
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+
+# 编译产物
+Dist/
+*.app
+
+# 临时文件
+*.tmp
+*.log
+.DS_Store
